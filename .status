@@ -11,15 +11,24 @@
 */*/*/*/packages/*/*: Skip
 */*/*/*/*/packages/*/*: Skip
 
-build/*: Skip  # nothing requires pub-build
+build/test/eval_test: Skip      # avoid testing twice
+build/test/parser_test: Skip    # avoid testing twice
+build/test/tokenizer_test: Skip # avoid testing twice
+build/test/visitor_test: Skip   # avoid testing twice
+
+[ $compiler == dart2js ]
+test/syntax_test: Skip  # use pub-build to test together with the .html file
+test/globals_test: Skip  # use pub-build to test together with the .html file
+test/bindings_test: Skip  # use pub-build to test together with the .html file
 
 [ $ie ]
-polymer_expressions/test/syntax_test: Fail, Timeout, Pass # Issue 19138
+test/syntax_test: Fail, Timeout, Pass # Issue 19138
 
 [ $runtime == ie10 ]
-polymer_expressions/*: Pass, RuntimeError # Issue 19265
+test/*: Pass, RuntimeError # Issue 19265
 
 [ $runtime == vm ]
-polymer_expressions/test/syntax_test: Skip
-polymer_expressions/test/globals_test: Skip
-polymer_expressions/test/bindings_test: Skip
+test/syntax_test: Skip
+test/globals_test: Skip
+test/bindings_test: Skip
+build/*: Skip

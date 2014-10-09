@@ -7,6 +7,7 @@ import 'dart:html';
 
 import 'package:observe/observe.dart';
 import 'package:observe/mirrors_used.dart'; // make test smaller.
+import 'package:smoke/mirrors.dart' as smoke;
 import 'package:polymer_expressions/polymer_expressions.dart';
 import 'package:template_binding/template_binding.dart';
 import 'package:unittest/unittest.dart';
@@ -14,6 +15,7 @@ import 'package:unittest/html_config.dart';
 
 main() {
   useHtmlConfiguration();
+  smoke.useMirrors();
 
   var testDiv;
   group('enumerate', () {
