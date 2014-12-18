@@ -1,15 +1,6 @@
 polymer_expressions
 ===================
 
-# NOTE: This repo is currently inactive
-
-This repo is a copy of the `polymer_expressions` package. This copy is not currently in
-active use.  The code is still being developed in the main Dart repo under
-`branches/bleeding_edge/dart/pkg/polymer_expressions/`. We are in the process of moving the
-code here, but you may find the sources here to be stale. Pull requests will not
-be merged here until the migration is complete. 
-
-# END NOTE
 
 Polymer expressions are an expressive syntax that can be used in HTML templates
 with Dart.
