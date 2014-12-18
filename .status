@@ -22,7 +22,7 @@ test/globals_test: Skip  # use pub-build to test together with the .html file
 test/bindings_test: Skip  # use pub-build to test together with the .html file
 
 [ $ie ]
-test/syntax_test: Fail, Timeout, Pass # Issue 19138
+build/test/syntax_test: Fail, Timeout, Pass # Issue 19138
 
 [ $runtime == ie10 ]
 test/*: Pass, RuntimeError # Issue 19265
