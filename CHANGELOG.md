@@ -1,4 +1,4 @@
-#### Pub version 0.13.0+1
+#### Pub version 0.13.0+2
  * Update `observe` dependency.
 
 #### Pub version 0.13.0
