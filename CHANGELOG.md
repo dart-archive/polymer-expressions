@@ -1,3 +1,6 @@
+#### Pub version 0.13.0+1
+ * Update `observe` dependency.
+
 #### Pub version 0.13.0
   * Move minimum 'template_binding' constraint to 0.13.0.
   * Additional polyfills are now required when using this package outside of 
