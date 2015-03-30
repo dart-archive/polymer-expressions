@@ -356,7 +356,7 @@ class EvalVisitor extends Visitor {
     var receiver = visit(g.receiver);
     if (receiver == null) return null;
     var symbol = smoke.nameToSymbol(g.name);
-    return smoke.read(receiver, symbol);
+    return _convert(smoke.read(receiver, symbol));
   }
 
   visitIndex(Index i) {
@@ -724,7 +724,7 @@ class GetterObserver extends ExpressionObserver<Getter> implements Getter {
       return;
     }
     var symbol = smoke.nameToSymbol(_expr.name);
-    _value = smoke.read(receiverValue, symbol);
+    _value = _convert(smoke.read(receiverValue, symbol));
 
     if (receiverValue is Observable) {
       _subscription = (receiverValue as Observable).changes.listen((changes) {
