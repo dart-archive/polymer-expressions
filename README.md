@@ -1,6 +1,7 @@
 polymer_expressions
 ===================
 
+**Note:** This package is for polymer.dart < 0.17
 
 Polymer expressions are an expressive syntax that can be used in HTML templates
 with Dart.
