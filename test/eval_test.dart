@@ -15,8 +15,9 @@ import 'package:polymer_expressions/filter.dart';
 import 'package:polymer_expressions/parser.dart';
 import 'package:unittest/unittest.dart';
 import 'package:observe/observe.dart';
-import 'package:observe/mirrors_used.dart'; // make test smaller.
+import 'package:observe/mirrors_used.dart' as mu;
 
+/// [mu] makes tests smaller.
 main() {
   reflectClass(Object); // suppress unused import warning
 

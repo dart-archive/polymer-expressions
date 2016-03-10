@@ -8,7 +8,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:observe/observe.dart';
-import 'package:observe/mirrors_used.dart'; // make test smaller.
+import 'package:observe/mirrors_used.dart' as mu;
 import 'package:observe/src/dirty_check.dart' show dirtyCheckZone;
 import 'package:polymer_expressions/polymer_expressions.dart';
 import 'package:smoke/mirrors.dart' as smoke;
@@ -20,6 +20,7 @@ import 'package:unittest/unittest.dart';
 
 var testDiv;
 
+/// [mu] makes tests smaller.
 main() => dirtyCheckZone().run(() {
   useHtmlConfiguration();
   smoke.useMirrors();
