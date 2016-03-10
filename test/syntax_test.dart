@@ -6,7 +6,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:observe/observe.dart';
-import 'package:observe/mirrors_used.dart'; // make test smaller.
+import 'package:observe/mirrors_used.dart' as mu;
 import 'package:polymer_expressions/polymer_expressions.dart';
 import 'package:polymer_expressions/eval.dart';
 import 'package:template_binding/template_binding.dart';
@@ -28,6 +28,7 @@ class TestScopeFactory implements ScopeFactory {
   }
 }
 
+/// [mu] makes tests smaller.
 main() {
   useHtmlConfiguration();
   smoke.useMirrors();
