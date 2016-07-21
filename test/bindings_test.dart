@@ -12,8 +12,8 @@ import 'package:observe/mirrors_used.dart' as mu;
 import 'package:observe/src/dirty_check.dart' show dirtyCheckZone;
 import 'package:polymer_expressions/polymer_expressions.dart';
 import 'package:smoke/mirrors.dart' as smoke;
-import 'package:template_binding/template_binding.dart' show
-    TemplateBindExtension, templateBind;
+import 'package:template_binding/template_binding.dart'
+    show TemplateBindExtension, templateBind;
 import 'package:unittest/html_config.dart';
 
 import 'package:unittest/unittest.dart';
@@ -22,130 +22,139 @@ var testDiv;
 
 /// [mu] makes tests smaller.
 main() => dirtyCheckZone().run(() {
-  useHtmlConfiguration();
-  smoke.useMirrors();
+      useHtmlConfiguration();
+      smoke.useMirrors();
 
-  group('bindings', () {
-    var stop = null;
-    setUp(() {
-      document.body.append(testDiv = new DivElement());
-    });
+      group('bindings', () {
+        var stop = null;
+        setUp(() {
+          document.body.append(testDiv = new DivElement());
+        });
 
-    tearDown(() {
-      testDiv.remove();
-      testDiv = null;
-    });
+        tearDown(() {
+          testDiv.remove();
+          testDiv = null;
+        });
 
-    test('should update binding when data changes', () {
-      var model = new NotifyModel();
-      var binding = new PolymerExpressions()
-          .prepareBinding('x', null, null)(model, null, false);
-      expect(binding.value, isNull);
-      model.x = "hi";
-      return new Future(() {
-        expect(binding.value, 'hi');
+        test('should update binding when data changes', () {
+          var model = new NotifyModel();
+          var binding = new PolymerExpressions()
+              .prepareBinding('x', null, null)(model, null, false);
+          expect(binding.value, isNull);
+          model.x = "hi";
+          return new Future(() {
+            expect(binding.value, 'hi');
+          });
+        });
+
+        // regression test for issue 19296
+        test('should not throw when data changes', () {
+          var model = new NotifyModel();
+          testDiv.append(_createTemplateInstance(
+              '<template repeat="{{ i in x }}">{{ i }}</template>', model));
+
+          return new Future(() {
+            model.x = [1, 2, 3];
+          }).then(_nextMicrotask).then((_) {
+            expect(testDiv.text, '123');
+          });
+        });
+
+        test('should update text content when data changes', () {
+          var model = new NotifyModel('abcde');
+          testDiv.append(_createTemplateInstance('<span>{{x}}</span>', model));
+
+          var el;
+          return new Future(() {
+            el = testDiv.query("span");
+            expect(el.text, 'abcde');
+            expect(model.x, 'abcde');
+            model.x = '___';
+          }).then(_nextMicrotask).then((_) {
+            expect(model.x, '___');
+            expect(el.text, '___');
+          });
+        });
+
+        test('should log eval exceptions', () {
+          var model = new NotifyModel('abcde');
+          var completer = new Completer();
+          runZoned(() {
+            testDiv
+                .append(_createTemplateInstance('<span>{{foo}}</span>', model));
+            return _nextMicrotask(null);
+          }, onError: (e) {
+            expect('$e', startsWith("Error evaluating expression 'foo':"));
+            completer.complete(true);
+          });
+          return completer.future;
+        });
+
+        test('detects changes to ObservableList', () {
+          var list = new ObservableList.from([1, 2, 3]);
+          var model = new NotifyModel(list);
+          testDiv.append(_createTemplateInstance('{{x[1]}}', model));
+
+          return new Future(() {
+            expect(testDiv.text, '2');
+            list[1] = 10;
+          })
+              .then(_nextMicrotask)
+              .then((_) {
+                expect(testDiv.text, '10');
+                list[1] = 11;
+              })
+              .then(_nextMicrotask)
+              .then((_) {
+                expect(testDiv.text, '11');
+                list[0] = 9;
+              })
+              .then(_nextMicrotask)
+              .then((_) {
+                expect(testDiv.text, '11');
+                list.removeAt(0);
+              })
+              .then(_nextMicrotask)
+              .then((_) {
+                expect(testDiv.text, '3');
+                list.add(90);
+                list.removeAt(0);
+              })
+              .then(_nextMicrotask)
+              .then((_) {
+                expect(testDiv.text, '90');
+              });
+        });
+
+        // Regression tests for issue 18792.
+        for (var usePolymer in [true, false]) {
+          // We run these tests both with PolymerExpressions and with the default
+          // delegate to ensure the results are consistent. When possible, the
+          // expressions on these tests use syntax common to both delegates.
+          var name = usePolymer ? 'polymer-expressions' : 'default';
+          group('$name delegate', () {
+            // Use <option template repeat="{{y}}" value="{{}}">item {{}}
+            _initialSelectTest('{{y}}', '{{}}', usePolymer);
+            _updateSelectTest('{{y}}', '{{}}', usePolymer);
+            _detectKeyValueChanges(usePolymer);
+            if (usePolymer) _detectKeyValueChangesPolymerSyntax();
+            _cursorPositionTest(usePolymer);
+          });
+        }
+
+        group('polymer-expressions delegate, polymer syntax', () {
+          // Use <option template repeat="{{i in y}}" value="{{i}}">item {{i}}
+          _initialSelectTest('{{i in y}}', '{{i}}', true);
+          _updateSelectTest('{{i in y}}', '{{i}}', true);
+        });
       });
     });
-
-    // regression test for issue 19296
-    test('should not throw when data changes', () {
-      var model = new NotifyModel();
-      testDiv.append(_createTemplateInstance(
-          '<template repeat="{{ i in x }}">{{ i }}</template>', model));
-
-      return new Future(() {
-        model.x = [1, 2, 3];
-      }).then(_nextMicrotask).then((_) {
-        expect(testDiv.text,'123');
-      });
-    });
-
-
-    test('should update text content when data changes', () {
-      var model = new NotifyModel('abcde');
-      testDiv.append(_createTemplateInstance('<span>{{x}}</span>', model));
-
-      var el;
-      return new Future(() {
-        el = testDiv.query("span");
-        expect(el.text, 'abcde');
-        expect(model.x, 'abcde');
-        model.x = '___';
-      }).then(_nextMicrotask).then((_) {
-        expect(model.x, '___');
-        expect(el.text, '___');
-      });
-    });
-
-    test('should log eval exceptions', () {
-      var model = new NotifyModel('abcde');
-      var completer = new Completer();
-      runZoned(() {
-        testDiv.append(_createTemplateInstance('<span>{{foo}}</span>', model));
-        return _nextMicrotask(null);
-      }, onError: (e) {
-        expect('$e', startsWith("Error evaluating expression 'foo':"));
-        completer.complete(true);
-      });
-      return completer.future;
-    });
-
-    test('detects changes to ObservableList', () {
-      var list = new ObservableList.from([1, 2, 3]);
-      var model = new NotifyModel(list);
-      testDiv.append(_createTemplateInstance('{{x[1]}}', model));
-
-      return new Future(() {
-        expect(testDiv.text, '2');
-        list[1] = 10;
-      }).then(_nextMicrotask).then((_) {
-        expect(testDiv.text, '10');
-        list[1] = 11;
-      }).then(_nextMicrotask).then((_) {
-        expect(testDiv.text, '11');
-        list[0] = 9;
-      }).then(_nextMicrotask).then((_) {
-        expect(testDiv.text, '11');
-        list.removeAt(0);
-      }).then(_nextMicrotask).then((_) {
-        expect(testDiv.text, '3');
-        list.add(90);
-        list.removeAt(0);
-      }).then(_nextMicrotask).then((_) {
-        expect(testDiv.text, '90');
-      });
-    });
-
-    // Regression tests for issue 18792.
-    for (var usePolymer in [true, false]) {
-      // We run these tests both with PolymerExpressions and with the default
-      // delegate to ensure the results are consistent. When possible, the
-      // expressions on these tests use syntax common to both delegates.
-      var name = usePolymer ? 'polymer-expressions' : 'default';
-      group('$name delegate', () {
-        // Use <option template repeat="{{y}}" value="{{}}">item {{}}
-        _initialSelectTest('{{y}}', '{{}}', usePolymer);
-        _updateSelectTest('{{y}}', '{{}}', usePolymer);
-        _detectKeyValueChanges(usePolymer);
-        if (usePolymer) _detectKeyValueChangesPolymerSyntax();
-        _cursorPositionTest(usePolymer);
-      });
-    }
-
-    group('polymer-expressions delegate, polymer syntax', () {
-        // Use <option template repeat="{{i in y}}" value="{{i}}">item {{i}}
-      _initialSelectTest('{{i in y}}', '{{i}}', true);
-      _updateSelectTest('{{i in y}}', '{{i}}', true);
-    });
-  });
-});
-
 
 _cursorPositionTest(bool usePolymer) {
   test('should preserve the cursor position', () {
     var model = new NotifyModel('abcde');
-    testDiv.append(_createTemplateInstance(
-        '<input id="i1" value={{x}}>', model, usePolymer: usePolymer));
+    testDiv.append(_createTemplateInstance('<input id="i1" value={{x}}>', model,
+        usePolymer: usePolymer));
     var el;
     return new Future(() {
       el = testDiv.query("#i1");
@@ -179,19 +188,25 @@ _cursorPositionTest(bool usePolymer) {
       expect(el.selectionStart, 4);
       expect(el.selectionEnd, 4);
       subscription.cancel();
-    }).then(_nextMicrotask).then((_) {
-      // Nothing changes on the next micro task.
-      expect(el.selectionStart, 4);
-      expect(el.selectionEnd, 4);
-    }).then((_) => window.animationFrame).then((_) {
-      // ... or on the next animation frame.
-      expect(el.selectionStart, 4);
-      expect(el.selectionEnd, 4);
-    }).then(_afterTimeout).then((_) {
-      // ... or later.
-      expect(el.selectionStart, 4);
-      expect(el.selectionEnd, 4);
-    });
+    })
+        .then(_nextMicrotask)
+        .then((_) {
+          // Nothing changes on the next micro task.
+          expect(el.selectionStart, 4);
+          expect(el.selectionEnd, 4);
+        })
+        .then((_) => window.animationFrame)
+        .then((_) {
+          // ... or on the next animation frame.
+          expect(el.selectionStart, 4);
+          expect(el.selectionEnd, 4);
+        })
+        .then(_afterTimeout)
+        .then((_) {
+          // ... or later.
+          expect(el.selectionStart, 4);
+          expect(el.selectionEnd, 4);
+        });
   });
 }
 
@@ -199,10 +214,12 @@ _initialSelectTest(String repeatExp, String valueExp, bool usePolymer) {
   test('initial select value is set correctly', () {
     var list = const ['a', 'b'];
     var model = new NotifyModel('b', list);
-    testDiv.append(_createTemplateInstance('<select value="{{x}}">'
+    testDiv.append(_createTemplateInstance(
+        '<select value="{{x}}">'
         '<option template repeat="$repeatExp" value="$valueExp">item $valueExp'
         '</option></select>',
-        model, usePolymer: usePolymer));
+        model,
+        usePolymer: usePolymer));
 
     expect(testDiv.querySelector('select').value, 'b');
     return new Future(() {
@@ -217,9 +234,12 @@ _updateSelectTest(String repeatExp, String valueExp, bool usePolymer) {
     var list = const ['a', 'b'];
     var model = new NotifyModel('a', list);
 
-    testDiv.append(_createTemplateInstance('<select value="{{x}}">'
+    testDiv.append(_createTemplateInstance(
+        '<select value="{{x}}">'
         '<option template repeat="$repeatExp" value="$valueExp">item $valueExp'
-        '</option></select></template>', model, usePolymer: usePolymer));
+        '</option></select></template>',
+        model,
+        usePolymer: usePolymer));
 
     expect(testDiv.querySelector('select').value, 'a');
     return new Future(() {
@@ -236,19 +256,23 @@ _detectKeyValueChanges(bool usePolymer) {
     var map = new ObservableMap.from({'a': 1, 'b': 2});
     var model = new NotifyModel(map);
     testDiv.append(_createTemplateInstance(
-        '<template repeat="{{x.keys}}">{{}},</template>',
-        model, usePolymer: usePolymer));
+        '<template repeat="{{x.keys}}">{{}},</template>', model,
+        usePolymer: usePolymer));
 
     return new Future(() {
       expect(testDiv.text, 'a,b,');
       map.remove('b');
       map['c'] = 3;
-    }).then(_nextMicrotask).then((_) {
-      expect(testDiv.text, 'a,c,');
-      map['a'] = 4;
-    }).then(_nextMicrotask).then((_) {
-      expect(testDiv.text, 'a,c,');
-    });
+    })
+        .then(_nextMicrotask)
+        .then((_) {
+          expect(testDiv.text, 'a,c,');
+          map['a'] = 4;
+        })
+        .then(_nextMicrotask)
+        .then((_) {
+          expect(testDiv.text, 'a,c,');
+        });
   });
 }
 
@@ -264,18 +288,22 @@ _detectKeyValueChangesPolymerSyntax() {
       expect(testDiv.text, '1,2,');
       map.remove('b');
       map['c'] = 3;
-    }).then(_nextMicrotask).then((_) {
-      expect(testDiv.text, '1,3,');
-      map['a'] = 4;
-    }).then(_nextMicrotask).then((_) {
-      expect(testDiv.text, '4,3,');
-    });
+    })
+        .then(_nextMicrotask)
+        .then((_) {
+          expect(testDiv.text, '1,3,');
+          map['a'] = 4;
+        })
+        .then(_nextMicrotask)
+        .then((_) {
+          expect(testDiv.text, '4,3,');
+        });
   });
 }
 
 _createTemplateInstance(String templateBody, model, {bool usePolymer: true}) {
   var tag = new Element.html('<template>$templateBody</template>',
-        treeSanitizer: _nullTreeSanitizer);
+      treeSanitizer: _nullTreeSanitizer);
   TemplateBindExtension.bootstrap(tag);
   var template = templateBind(tag);
   var delegate = usePolymer ? new PolymerExpressions() : null;
@@ -305,4 +333,5 @@ class NotifyModel extends ChangeNotifier {
 class _NullTreeSanitizer implements NodeTreeSanitizer {
   void sanitizeTree(Node node) {}
 }
+
 final _nullTreeSanitizer = new _NullTreeSanitizer();

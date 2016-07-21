@@ -48,15 +48,15 @@ main() {
     });
 
     Future<Element> setUpTest(String html, {model, Map globals}) {
-      var tag = new Element.html(html,
-          treeSanitizer: new NullNodeTreeSanitizer());
+      var tag =
+          new Element.html(html, treeSanitizer: new NullNodeTreeSanitizer());
 
       // make sure templates behave in the polyfill
       TemplateBindExtension.bootstrap(tag);
 
       templateBind(tag)
-        ..bindingDelegate = new PolymerExpressions(globals: globals,
-            scopeFactory: testScopeFactory)
+        ..bindingDelegate = new PolymerExpressions(
+            globals: globals, scopeFactory: testScopeFactory)
         ..model = model;
       testDiv.children.clear();
       testDiv.append(tag);
@@ -75,34 +75,37 @@ main() {
       // We could try to optimize the outer scope away in cases where the
       // expression is empty, but there are a lot of special cases in the
       // syntax code already.
-      test('should create one scope for a single binding', () =>
-        setUpTest('''
+      test(
+          'should create one scope for a single binding',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <div>{{ data }}</div>
             </template>''',
-            model: new Model('a'))
-        .then((_) {
-          expect(testDiv.children.length, 2);
-          expect(testDiv.children[1].text, 'a');
-          expect(testScopeFactory.scopeCount, 1);
-        }));
+                  model: new Model('a')).then((_) {
+                expect(testDiv.children.length, 2);
+                expect(testDiv.children[1].text, 'a');
+                expect(testScopeFactory.scopeCount, 1);
+              }));
 
-      test('should only create a single scope for two bindings', () =>
-        setUpTest('''
+      test(
+          'should only create a single scope for two bindings',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <div>{{ data }}</div>
               <div>{{ data }}</div>
             </template>''',
-            model: new Model('a'))
-        .then((_) {
-          expect(testDiv.children.length, 3);
-          expect(testDiv.children[1].text, 'a');
-          expect(testDiv.children[2].text, 'a');
-          expect(testScopeFactory.scopeCount, 1);
-        }));
+                  model: new Model('a')).then((_) {
+                expect(testDiv.children.length, 3);
+                expect(testDiv.children[1].text, 'a');
+                expect(testDiv.children[2].text, 'a');
+                expect(testScopeFactory.scopeCount, 1);
+              }));
 
       test('should create a new scope for a bind/as binding', () {
-        return setUpTest('''
+        return setUpTest(
+            '''
             <template id="test" bind>
               <div>{{ data }}</div>
               <template bind="{{ data as a }}" id="inner">
@@ -110,8 +113,7 @@ main() {
                 <div>{{ data }}</div>
               </template>
             </template>''',
-            model: new Model('foo'))
-        .then((_) {
+            model: new Model('foo')).then((_) {
           expect(testDiv.children.length, 5);
           expect(testDiv.children[1].text, 'foo');
           expect(testDiv.children[3].text, 'foo');
@@ -121,7 +123,8 @@ main() {
       });
 
       test('should create scopes for a repeat/in binding', () {
-        return setUpTest('''
+        return setUpTest(
+            '''
             <template id="test" bind>
               <div>{{ data }}</div>
               <template repeat="{{ i in items }}" id="inner">
@@ -129,8 +132,10 @@ main() {
                 <div>{{ data }}</div>
               </template>
             </template>''',
-            model: new Model('foo'), globals: {'items': ['a', 'b', 'c']})
-        .then((_) {
+            model: new Model('foo'),
+            globals: {
+              'items': ['a', 'b', 'c']
+            }).then((_) {
           expect(testDiv.children.length, 9);
           expect(testDiv.children[1].text, 'foo');
           expect(testDiv.children[3].text, 'a');
@@ -143,97 +148,101 @@ main() {
           expect(testScopeFactory.scopeCount, 4);
         });
       });
-
-
     });
 
     group('with template bind', () {
-
-      test('should show a simple binding on the model', () =>
-        setUpTest('''
+      test(
+          'should show a simple binding on the model',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <div>{{ data }}</div>
             </template>''',
-            model: new Model('a'))
-        .then((_) {
-          expect(testDiv.children.length, 2);
-          expect(testDiv.children[1].text, 'a');
-        }));
+                  model: new Model('a')).then((_) {
+                expect(testDiv.children.length, 2);
+                expect(testDiv.children[1].text, 'a');
+              }));
 
-      test('should handle an empty binding on the model', () =>
-        setUpTest('''
+      test(
+          'should handle an empty binding on the model',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <div>{{ }}</div>
             </template>''',
-            model: 'a')
-        .then((_) {
-          expect(testDiv.children.length, 2);
-          expect(testDiv.children[1].text, 'a');
-        }));
+                  model: 'a').then((_) {
+                expect(testDiv.children.length, 2);
+                expect(testDiv.children[1].text, 'a');
+              }));
 
-      test('should show a simple binding to a global', () =>
-        setUpTest('''
+      test(
+          'should show a simple binding to a global',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <div>{{ a }}</div>
             </template>''',
-            globals: {'a': '123'})
-        .then((_) {
-          expect(testDiv.children.length, 2);
-          expect(testDiv.children[1].text, '123');
-        }));
+                  globals: {'a': '123'}).then((_) {
+                expect(testDiv.children.length, 2);
+                expect(testDiv.children[1].text, '123');
+              }));
 
-      test('should show an expression binding', () =>
-        setUpTest('''
+      test(
+          'should show an expression binding',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <div>{{ data + 'b' }}</div>
             </template>''',
-            model: new Model('a'))
-        .then((_) {
-          expect(testDiv.children.length, 2);
-          expect(testDiv.children[1].text, 'ab');
-        }));
+                  model: new Model('a')).then((_) {
+                expect(testDiv.children.length, 2);
+                expect(testDiv.children[1].text, 'ab');
+              }));
 
-      test('should handle an expression in the bind attribute', () =>
-        setUpTest('''
+      test(
+          'should handle an expression in the bind attribute',
+          () => setUpTest(
+                  '''
             <template id="test" bind="{{ data }}">
               <div>{{ this }}</div>
             </template>''',
-            model: new Model('a'))
-        .then((_) {
-          expect(testDiv.children.length, 2);
-          expect(testDiv.children[1].text, 'a');
-        }));
+                  model: new Model('a')).then((_) {
+                expect(testDiv.children.length, 2);
+                expect(testDiv.children[1].text, 'a');
+              }));
 
-      test('should handle a nested template with an expression in the bind '
-          'attribute', () =>
-        setUpTest('''
+      test(
+          'should handle a nested template with an expression in the bind '
+          'attribute',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <template id="inner" bind="{{ data }}">
                 <div>{{ this }}</div>
               </template>
             </template>''',
-            model: new Model('a'))
-        .then((_) {
-          expect(testDiv.children.length, 3);
-          expect(testDiv.children[2].text, 'a');
-        }));
+                  model: new Model('a')).then((_) {
+                expect(testDiv.children.length, 3);
+                expect(testDiv.children[2].text, 'a');
+              }));
 
-
-      test('should handle an "as" expression in the bind attribute', () =>
-        setUpTest('''
+      test(
+          'should handle an "as" expression in the bind attribute',
+          () => setUpTest(
+                  '''
             <template id="test" bind="{{ data as a }}">
               <div>{{ data }}b</div>
               <div>{{ a }}c</div>
             </template>''',
-            model: new Model('a'))
-        .then((_) {
-          expect(testDiv.children.length, 3);
-          expect(testDiv.children[1].text, 'ab');
-          expect(testDiv.children[2].text, 'ac');
-        }));
+                  model: new Model('a')).then((_) {
+                expect(testDiv.children.length, 3);
+                expect(testDiv.children[1].text, 'ab');
+                expect(testDiv.children[2].text, 'ac');
+              }));
 
       // passes safari
-      test('should not resolve names in the outer template from within a nested'
+      test(
+          'should not resolve names in the outer template from within a nested'
           ' template with a bind binding', () {
         var completer = new Completer();
         var bindingErrorHappened = false;
@@ -244,7 +253,8 @@ main() {
           }
         }
         runZoned(() {
-          setUpTest('''
+          setUpTest(
+              '''
               <template id="test" bind>
                 <div>{{ data }}</div>
                 <div>{{ b }}</div>
@@ -254,8 +264,8 @@ main() {
                   <div>{{ this }}</div>
                 </template>
               </template>''',
-              model: new Model('foo'), globals: {'b': 'bbb'})
-          .then((_) {
+              model: new Model('foo'),
+              globals: {'b': 'bbb'}).then((_) {
             expect(testDiv.children[0].text, '');
             expect(testDiv.children[1].text, 'foo');
             expect(testDiv.children[2].text, 'bbb');
@@ -279,9 +289,11 @@ main() {
       });
 
       // passes safari
-      test('should shadow names in the outer template from within a nested '
-          'template', () =>
-          setUpTest('''
+      test(
+          'should shadow names in the outer template from within a nested '
+          'template',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <div>{{ a }}</div>
               <div>{{ b }}</div>
@@ -290,22 +302,20 @@ main() {
                 <div>{{ b }}</div>
               </template>
             </template>''',
-            globals: {'a': 'aaa', 'b': 'bbb'})
-        .then((_) {
-          expect(testDiv.children[0].text, '');
-          expect(testDiv.children[1].text, 'aaa');
-          expect(testDiv.children[2].text, 'bbb');
-          expect(testDiv.children[3].tagName.toLowerCase(), 'template');
-          expect(testDiv.children[4].text, 'bbb');
-          expect(testDiv.children[5].text, 'bbb');
-        }));
-
+                  globals: {'a': 'aaa', 'b': 'bbb'}).then((_) {
+                expect(testDiv.children[0].text, '');
+                expect(testDiv.children[1].text, 'aaa');
+                expect(testDiv.children[2].text, 'bbb');
+                expect(testDiv.children[3].tagName.toLowerCase(), 'template');
+                expect(testDiv.children[4].text, 'bbb');
+                expect(testDiv.children[5].text, 'bbb');
+              }));
     });
 
     group('with template repeat', () {
-
       // passes safari
-      test('should not resolve names in the outer template from within a nested'
+      test(
+          'should not resolve names in the outer template from within a nested'
           ' template with a repeat binding', () {
         var completer = new Completer();
         var bindingErrorHappened = false;
@@ -316,16 +326,18 @@ main() {
           }
         }
         runZoned(() {
-          setUpTest('''
+          setUpTest(
+              '''
               <template id="test" bind>
                 <div>{{ data }}</div>
                 <template repeat="{{ items }}">
                   <div>{{ }}{{ data }}</div>
                 </template>
               </template>''',
-              globals: {'items': [1, 2, 3]},
-              model: new Model('a'))
-          .then((_) {
+              globals: {
+                'items': [1, 2, 3]
+              },
+              model: new Model('a')).then((_) {
             expect(testDiv.children[0].text, '');
             expect(testDiv.children[1].text, 'a');
             expect(testDiv.children[2].tagName.toLowerCase(), 'template');
@@ -343,39 +355,42 @@ main() {
         return completer.future;
       });
 
-      test('should handle repeat/in bindings', () =>
-        setUpTest('''
+      test(
+          'should handle repeat/in bindings',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <div>{{ data }}</div>
               <template repeat="{{ item in items }}">
                 <div>{{ item }}{{ data }}</div>
               </template>
             </template>''',
-            globals: {'items': [1, 2, 3]},
-            model: new Model('a'))
-        .then((_) {
-          // expect 6 children: two templates, a div and three instances
-          expect(testDiv.children[0].text, '');
-          expect(testDiv.children[1].text, 'a');
-          expect(testDiv.children[2].tagName.toLowerCase(), 'template');
-          expect(testDiv.children[3].text, '1a');
-          expect(testDiv.children[4].text, '2a');
-          expect(testDiv.children[5].text, '3a');
+                  globals: {
+                    'items': [1, 2, 3]
+                  },
+                  model: new Model('a')).then((_) {
+                // expect 6 children: two templates, a div and three instances
+                expect(testDiv.children[0].text, '');
+                expect(testDiv.children[1].text, 'a');
+                expect(testDiv.children[2].tagName.toLowerCase(), 'template');
+                expect(testDiv.children[3].text, '1a');
+                expect(testDiv.children[4].text, '2a');
+                expect(testDiv.children[5].text, '3a');
 //          expect(testDiv.children.map((c) => c.text),
 //              ['', 'a', '', '1a', '2a', '3a']);
-        }));
+              }));
 
       test('should observe changes to lists in repeat bindings', () {
         var items = new ObservableList.from([1, 2, 3]);
-        return setUpTest('''
+        return setUpTest(
+            '''
             <template id="test" bind>
               <template repeat="{{ items }}">
                 <div>{{ }}</div>
               </template>
             </template>''',
             globals: {'items': items},
-            model: new Model('a'))
-        .then((_) {
+            model: new Model('a')).then((_) {
           expect(testDiv.children[0].text, '');
           expect(testDiv.children[1].tagName.toLowerCase(), 'template');
           expect(testDiv.children[2].text, '1');
@@ -399,15 +414,15 @@ main() {
 
       test('should observe changes to lists in repeat/in bindings', () {
         var items = new ObservableList.from([1, 2, 3]);
-        return setUpTest('''
+        return setUpTest(
+            '''
             <template id="test" bind>
               <template repeat="{{ item in items }}">
                 <div>{{ item }}</div>
               </template>
             </template>''',
             globals: {'items': items},
-            model: new Model('a'))
-        .then((_) {
+            model: new Model('a')).then((_) {
           expect(testDiv.children[0].text, '');
           expect(testDiv.children[1].tagName.toLowerCase(), 'template');
           expect(testDiv.children[2].text, '1');
@@ -431,54 +446,47 @@ main() {
     });
 
     group('with template if', () {
-
-      Future doTest(value, bool shouldRender) =>
-        setUpTest('''
+      Future doTest(value, bool shouldRender) => setUpTest(
+              '''
             <template id="test" bind>
               <div>{{ data }}</div>
               <template if="{{ show }}">
                 <div>{{ data }}</div>
               </template>
             </template>''',
-            globals: {'show': value},
-            model: new Model('a'))
-        .then((_) {
-          if (shouldRender) {
-            expect(testDiv.children.length, 4);
-            expect(testDiv.children[1].text, 'a');
-            expect(testDiv.children[3].text, 'a');
-          } else {
-            expect(testDiv.children.length, 3);
-            expect(testDiv.children[1].text, 'a');
-          }
-        });
+              globals: {'show': value},
+              model: new Model('a')).then((_) {
+            if (shouldRender) {
+              expect(testDiv.children.length, 4);
+              expect(testDiv.children[1].text, 'a');
+              expect(testDiv.children[3].text, 'a');
+            } else {
+              expect(testDiv.children.length, 3);
+              expect(testDiv.children[1].text, 'a');
+            }
+          });
 
-      test('should render for a true expression',
-          () => doTest(true, true));
+      test('should render for a true expression', () => doTest(true, true));
 
       test('should treat a non-null expression as truthy',
           () => doTest('a', true));
 
-      test('should treat an empty list as truthy',
-          () => doTest([], true));
+      test('should treat an empty list as truthy', () => doTest([], true));
 
-      test('should handle a false expression',
-          () => doTest(false, false));
+      test('should handle a false expression', () => doTest(false, false));
 
-      test('should treat null as falsey',
-          () => doTest(null, false));
+      test('should treat null as falsey', () => doTest(null, false));
     });
 
     group('error handling', () {
-
       test('should silently handle bad variable names', () {
         var completer = new Completer();
         runZoned(() {
           testDiv.nodes.add(new Element.html('''
               <template id="test" bind>{{ foo }}</template>'''));
           templateBind(query('#test'))
-              ..bindingDelegate = new PolymerExpressions()
-              ..model = [];
+            ..bindingDelegate = new PolymerExpressions()
+            ..model = [];
           return new Future(() {});
         }, onError: (e, s) {
           expect('$e', contains('foo'));
@@ -487,76 +495,88 @@ main() {
         return completer.future;
       });
 
-      test('should handle null collections in "in" expressions', () =>
-        setUpTest('''
+      test(
+          'should handle null collections in "in" expressions',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <template repeat="{{ item in items }}">
                 {{ item }}
               </template>
             </template>''',
-            globals: {'items': null})
-        .then((_) {
-          expect(testDiv.children.length, 2);
-          expect(testDiv.children[0].id, 'test');
-        }));
-
+                  globals: {'items': null}).then((_) {
+                expect(testDiv.children.length, 2);
+                expect(testDiv.children[0].id, 'test');
+              }));
     });
 
     group('special bindings', () {
-
-      test('should handle class attributes with lists', ()  =>
-        setUpTest('''
+      test(
+          'should handle class attributes with lists',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <div class="{{ classes }}">
             </template>''',
-            globals: {'classes': ['a', 'b']})
-        .then((_) {
-          expect(testDiv.children.length, 2);
-          expect(testDiv.children[1].attributes['class'], 'a b');
-          expect(testDiv.children[1].classes, ['a', 'b']);
-        }));
+                  globals: {
+                    'classes': ['a', 'b']
+                  }).then((_) {
+                expect(testDiv.children.length, 2);
+                expect(testDiv.children[1].attributes['class'], 'a b');
+                expect(testDiv.children[1].classes, ['a', 'b']);
+              }));
 
-      test('should handle class attributes with maps', ()  =>
-        setUpTest('''
+      test(
+          'should handle class attributes with maps',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <div class="{{ classes }}">
             </template>''',
-            globals: {'classes': {'a': true, 'b': false, 'c': true}})
-        .then((_) {
-          expect(testDiv.children.length, 2);
-          expect(testDiv.children[1].attributes['class'], 'a c');
-          expect(testDiv.children[1].classes, ['a', 'c']);
-        }));
+                  globals: {
+                    'classes': {'a': true, 'b': false, 'c': true}
+                  }).then((_) {
+                expect(testDiv.children.length, 2);
+                expect(testDiv.children[1].attributes['class'], 'a c');
+                expect(testDiv.children[1].classes, ['a', 'c']);
+              }));
 
-      test('should handle style attributes with lists', () =>
-        setUpTest('''
+      test(
+          'should handle style attributes with lists',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <div style="{{ styles }}">
             </template>''',
-            globals: {'styles': ['display: none', 'color: black']})
-        .then((_) {
-          expect(testDiv.children.length, 2);
-          expect(testDiv.children[1].attributes['style'],
-              'display: none;color: black');
-        }));
+                  globals: {
+                    'styles': ['display: none', 'color: black']
+                  }).then((_) {
+                expect(testDiv.children.length, 2);
+                expect(testDiv.children[1].attributes['style'],
+                    'display: none;color: black');
+              }));
 
-      test('should handle style attributes with maps', ()  =>
-        setUpTest('''
+      test(
+          'should handle style attributes with maps',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <div style="{{ styles }}">
             </template>''',
-            globals: {'styles': {'display': 'none', 'color': 'black'}})
-        .then((_) {
-          expect(testDiv.children.length, 2);
-          expect(testDiv.children[1].attributes['style'],
-              'display: none;color: black');
-        }));
+                  globals: {
+                    'styles': {'display': 'none', 'color': 'black'}
+                  }).then((_) {
+                expect(testDiv.children.length, 2);
+                expect(testDiv.children[1].attributes['style'],
+                    'display: none;color: black');
+              }));
     });
 
     group('regression tests', () {
-
-      test('should bind to literals', () =>
-        setUpTest('''
+      test(
+          'should bind to literals',
+          () => setUpTest(
+                  '''
             <template id="test" bind>
               <div>{{ 123 }}</div>
               <div>{{ 123.456 }}</div>
@@ -564,18 +584,15 @@ main() {
               <div>{{ true }}</div>
               <div>{{ null }}</div>
             </template>''',
-            globals: {'items': null})
-        .then((_) {
-          expect(testDiv.children.length, 6);
-          expect(testDiv.children[1].text, '123');
-          expect(testDiv.children[2].text, '123.456');
-          expect(testDiv.children[3].text, 'abc');
-          expect(testDiv.children[4].text, 'true');
-          expect(testDiv.children[5].text, '');
-        }));
-
-      });
-
+                  globals: {'items': null}).then((_) {
+                expect(testDiv.children.length, 6);
+                expect(testDiv.children[1].text, '123');
+                expect(testDiv.children[2].text, '123.456');
+                expect(testDiv.children[3].text, 'abc');
+                expect(testDiv.children[4].text, 'true');
+                expect(testDiv.children[5].text, '');
+              }));
+    });
   });
 }
 
@@ -604,7 +621,6 @@ class Model extends ChangeNotifier {
 }
 
 class NullNodeTreeSanitizer implements NodeTreeSanitizer {
-
   @override
   void sanitizeTree(Node node) {}
 }

@@ -28,8 +28,8 @@ main() {
   };
 
   templateBind(querySelector('#test'))
-      ..bindingDelegate = new PolymerExpressions(globals: globals)
-      ..model = john;
+    ..bindingDelegate = new PolymerExpressions(globals: globals)
+    ..model = john;
 
   templateBind(querySelector('#test2')).model = john;
 }

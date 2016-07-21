@@ -30,7 +30,6 @@ class EvalBenchmark extends BenchmarkBase {
   run() {
     var value = eval(expr, scope);
   }
-
 }
 
 double total = 0.0;
@@ -43,17 +42,15 @@ benchmark(String name, String expr, {Object model, Map variables}) {
 }
 
 main() {
-
   benchmark('Constant', '1');
   benchmark('Top-level Name', 'foo',
       variables: {'foo': new Foo(new Bar('hello'))});
-  benchmark('Model field', 'bar',
-      model: new Foo(new Bar('hello')));
+  benchmark('Model field', 'bar', model: new Foo(new Bar('hello')));
   benchmark('Path', 'foo.bar.baz',
       variables: {'foo': new Foo(new Bar('hello'))});
-  benchmark('Map', 'm["foo"]',
-      variables: {'m': {'foo': 1}});
+  benchmark('Map', 'm["foo"]', variables: {
+    'm': {'foo': 1}
+  });
   benchmark('Equality', '"abc" == "123"');
   print('total: $total us');
-
 }

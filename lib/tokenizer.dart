@@ -50,30 +50,48 @@ const int _BAR = 124;
 const int _CLOSE_CURLY_BRACKET = 125;
 const int _NBSP = 160;
 
-const _OPERATORS = const [_PLUS, _MINUS, _STAR, _SLASH, _BANG, _AMPERSAND,
-                          _PERCENT, _LT, _EQ, _GT, _QUESTION, _CARET, _BAR];
+const _OPERATORS = const [
+  _PLUS,
+  _MINUS,
+  _STAR,
+  _SLASH,
+  _BANG,
+  _AMPERSAND,
+  _PERCENT,
+  _LT,
+  _EQ,
+  _GT,
+  _QUESTION,
+  _CARET,
+  _BAR
+];
 
-const _GROUPERS = const [_OPEN_PAREN, _CLOSE_PAREN,
-                         _OPEN_SQUARE_BRACKET, _CLOSE_SQUARE_BRACKET,
-                         _OPEN_CURLY_BRACKET, _CLOSE_CURLY_BRACKET];
+const _GROUPERS = const [
+  _OPEN_PAREN,
+  _CLOSE_PAREN,
+  _OPEN_SQUARE_BRACKET,
+  _CLOSE_SQUARE_BRACKET,
+  _OPEN_CURLY_BRACKET,
+  _CLOSE_CURLY_BRACKET
+];
 
 const _TWO_CHAR_OPS = const ['==', '!=', '<=', '>=', '||', '&&'];
 
 const KEYWORDS = const ['as', 'in', 'this'];
 
 const _PRECEDENCE = const {
-  '!':  0,
-  ':':  0,
-  ',':  0,
-  ')':  0,
-  ']':  0,
-  '}':  0, // ?
-  '?':  1,
+  '!': 0,
+  ':': 0,
+  ',': 0,
+  ')': 0,
+  ']': 0,
+  '}': 0, // ?
+  '?': 1,
   '||': 2,
   '&&': 3,
-  '|':  4,
-  '^':  5,
-  '&':  6,
+  '|': 4,
+  '^': 5,
+  '&': 6,
 
   // equality
   '!=': 7,
@@ -83,23 +101,23 @@ const _PRECEDENCE = const {
 
   // relational
   '>=': 8,
-  '>':  8,
+  '>': 8,
   '<=': 8,
-  '<':  8,
+  '<': 8,
 
   // additive
-  '+':  9,
-  '-':  9,
+  '+': 9,
+  '-': 9,
 
   // multiplicative
-  '%':  10,
-  '/':  10,
-  '*':  10,
+  '%': 10,
+  '/': 10,
+  '*': 10,
 
   // postfix
-  '(':  11,
-  '[':  11,
-  '.':  11,
+  '(': 11,
+  '[': 11,
+  '.': 11,
   '{': 11, //not sure this is correct
 };
 
@@ -118,12 +136,20 @@ const int KEYWORD_TOKEN = 10;
 
 bool isWhitespace(int next) => next == _SPACE || next == _TAB || next == _NBSP;
 
-bool isIdentifierOrKeywordStart(int next) => (_a <= next && next <= _z) ||
-    (_A <= next && next <= _Z) || next == _US || next == _$ || next > 127;
+bool isIdentifierOrKeywordStart(int next) =>
+    (_a <= next && next <= _z) ||
+    (_A <= next && next <= _Z) ||
+    next == _US ||
+    next == _$ ||
+    next > 127;
 
-bool isIdentifier(int next) => (_a <= next && next <= _z) ||
-    (_A <= next && next <= _Z) || (_0 <= next && next <= _9) ||
-    next == _US || next == _$ || next > 127;
+bool isIdentifier(int next) =>
+    (_a <= next && next <= _z) ||
+    (_A <= next && next <= _Z) ||
+    (_0 <= next && next <= _9) ||
+    next == _US ||
+    next == _$ ||
+    next > 127;
 
 bool isQuote(int next) => next == _DQ || next == _SQ;
 
@@ -135,12 +161,18 @@ bool isGrouper(int next) => _GROUPERS.contains(next);
 
 int escape(int c) {
   switch (c) {
-    case _f: return _FF;
-    case _n: return _LF;
-    case _r: return _CR;
-    case _t: return _TAB;
-    case _v: return _VTAB;
-    default: return c;
+    case _f:
+      return _FF;
+    case _n:
+      return _LF;
+    case _r:
+      return _CR;
+    case _t:
+      return _TAB;
+    case _v:
+      return _VTAB;
+    default:
+      return c;
   }
 }
 
@@ -169,7 +201,7 @@ class Tokenizer {
 
   List<Token> tokenize() {
     _advance();
-    while(_next != null) {
+    while (_next != null) {
       if (isWhitespace(_next)) {
         _advance();
       } else if (isQuote(_next)) {

@@ -38,19 +38,17 @@ import 'expression.dart';
 import 'parser.dart';
 import 'src/globals.dart';
 
-Object _classAttributeConverter(v) =>
-    (v is Map) ? v.keys.where((k) => v[k] == true).join(' ') :
-    (v is Iterable) ? v.join(' ') :
-    v;
+Object _classAttributeConverter(v) => (v is Map)
+    ? v.keys.where((k) => v[k] == true).join(' ')
+    : (v is Iterable) ? v.join(' ') : v;
 
-Object _styleAttributeConverter(v) =>
-    (v is Map) ? v.keys.map((k) => '$k: ${v[k]}').join(';') :
-    (v is Iterable) ? v.join(';') :
-    v;
+Object _styleAttributeConverter(v) => (v is Map)
+    ? v.keys.map((k) => '$k: ${v[k]}').join(';')
+    : (v is Iterable) ? v.join(';') : v;
 
 class PolymerExpressions extends BindingDelegate {
   /** The default [globals] to use for Polymer expressions. */
-  static const Map DEFAULT_GLOBALS = const { 'enumerate': enumerate };
+  static const Map DEFAULT_GLOBALS = const {'enumerate': enumerate};
 
   final ScopeFactory _scopeFactory;
   final Map<String, Object> globals;
@@ -65,11 +63,13 @@ class PolymerExpressions extends BindingDelegate {
    * variables used as [globals]. If no globals are supplied, a copy of the
    * [DEFAULT_GLOBALS] will be used.
    */
-  PolymerExpressions({Map<String, Object> globals,
+  PolymerExpressions(
+      {Map<String, Object> globals,
       ScopeFactory scopeFactory: const ScopeFactory()})
-      : globals = globals == null ?
-          new Map<String, Object>.from(DEFAULT_GLOBALS) : globals,
-          _scopeFactory = scopeFactory;
+      : globals = globals == null
+            ? new Map<String, Object>.from(DEFAULT_GLOBALS)
+            : globals,
+        _scopeFactory = scopeFactory;
 
   @override
   PrepareBindingFunction prepareBinding(String path, name, Node boundNode) {
@@ -259,13 +259,12 @@ class PolymerExpressions extends BindingDelegate {
   /// returns the value. Otherwise, when [oneTime] is false, it returns a
   /// [Bindable] that besides evaluating the expression, it will also react to
   /// observable changes from the model and update the value accordingly.
-  static getBinding(Expression expr, model, {Map<String, Object> globals,
-      oneTime: false}) {
+  static getBinding(Expression expr, model,
+      {Map<String, Object> globals, oneTime: false}) {
     if (globals == null) globals = new Map.from(DEFAULT_GLOBALS);
-    var scope = model is Scope ? model
-        : new Scope(model: model, variables: globals);
-    return oneTime ? _Binding._oneTime(expr, scope)
-        : new _Binding(expr, scope);
+    var scope =
+        model is Scope ? model : new Scope(model: model, variables: globals);
+    return oneTime ? _Binding._oneTime(expr, scope) : new _Binding(expr, scope);
   }
 }
 
@@ -288,8 +287,8 @@ class _Binding extends Bindable {
       var value = eval(expr, scope);
       return (converter == null) ? value : converter(value);
     } catch (e, s) {
-      new Completer().completeError(
-          "Error evaluating expression '$expr': $e", s);
+      new Completer()
+          .completeError("Error evaluating expression '$expr': $e", s);
     }
     return null;
   }
@@ -319,8 +318,8 @@ class _Binding extends Bindable {
     try {
       assign(_expr, v, _scope, checkAssignability: false);
     } catch (e, s) {
-      new Completer().completeError(
-          "Error evaluating expression '$_expr': $e", s);
+      new Completer()
+          .completeError("Error evaluating expression '$_expr': $e", s);
     }
   }
 
@@ -329,10 +328,11 @@ class _Binding extends Bindable {
 
     _callback = callback;
     _observer = observe(_expr, _scope);
-    _sub = _observer.onUpdate.listen(_convertAndCheck)..onError((e, s) {
-      new Completer().completeError(
-          "Error evaluating expression '$_observer': $e", s);
-    });
+    _sub = _observer.onUpdate.listen(_convertAndCheck)
+      ..onError((e, s) {
+        new Completer()
+            .completeError("Error evaluating expression '$_observer': $e", s);
+      });
 
     _check(skipChanges: true);
     return _value;
@@ -343,8 +343,8 @@ class _Binding extends Bindable {
       update(_observer, _scope, skipChanges: skipChanges);
       return _convertAndCheck(_observer.currentValue, skipChanges: skipChanges);
     } catch (e, s) {
-      new Completer().completeError(
-          "Error evaluating expression '$_observer': $e", s);
+      new Completer()
+          .completeError("Error evaluating expression '$_observer': $e", s);
       return false;
     }
   }
@@ -359,7 +359,6 @@ class _Binding extends Bindable {
     new Closer().visit(_observer);
     _observer = null;
   }
-
 
   // TODO(jmesserly): the following code is copy+pasted from path_observer.dart
   // What seems to be going on is: polymer_expressions.dart has its own _Binding

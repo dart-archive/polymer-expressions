@@ -7,7 +7,6 @@ library polymer_expressions.filter;
 typedef Object Filter(Object value);
 
 abstract class Transformer<T, V> {
-
   T forward(V v);
   V reverse(T t);
   Transformer<V, T> get inverse => new _InverseTransformer/*<V, T>*/(this);

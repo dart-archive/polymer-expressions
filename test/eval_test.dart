@@ -171,19 +171,12 @@ main() {
     });
 
     test('should call a filter', () {
-      var topLevel = {
-        'a': 'foo',
-        'uppercase': (s) => s.toUpperCase(),
-      };
+      var topLevel = {'a': 'foo', 'uppercase': (s) => s.toUpperCase(),};
       expectEval('a | uppercase', 'FOO', null, topLevel);
     });
 
     test('should call a transformer', () {
-      var topLevel = {
-        'a': '42',
-        'parseInt': parseInt,
-        'add': add,
-      };
+      var topLevel = {'a': '42', 'parseInt': parseInt, 'add': add,};
       expectEval('a | parseInt()', 42, null, topLevel);
       expectEval('a | parseInt(8)', 34, null, topLevel);
       expectEval('a | parseInt() | add(10)', 52, null, topLevel);
@@ -230,11 +223,9 @@ main() {
     test('should not evaluate "in" expressions', () {
       expect(() => eval(parse('item in items'), null), throws);
     });
-
   });
 
   group('assign', () {
-
     test('should assign a single identifier', () {
       var foo = new Foo(name: 'a');
       assign(parse('name'), 'b', new Scope(model: foo));
@@ -265,11 +256,7 @@ main() {
 
     test('should assign through transformers', () {
       var foo = new Foo(name: '42', age: 32);
-      var globals = {
-        'a': '42',
-        'parseInt': parseInt,
-        'add': add,
-      };
+      var globals = {'a': '42', 'parseInt': parseInt, 'add': add,};
       var scope = new Scope(model: foo, variables: globals);
       assign(parse('age | add(7)'), 29, scope);
       expect(foo.age, 22);
@@ -292,21 +279,19 @@ main() {
           throwsA(new isInstanceOf<EvalException>()));
     });
 
-    test('should not throw on assignments to non-assignable expressions if '
+    test(
+        'should not throw on assignments to non-assignable expressions if '
         'checkAssignability is false', () {
       var foo = new Foo(name: 'a');
       var scope = new Scope(model: foo);
       expect(
-          assign(parse('name + 1'), 1, scope, checkAssignability: false),
-          null);
-      expect(
-          assign(parse('toString()'), 1, scope, checkAssignability: false),
+          assign(parse('name + 1'), 1, scope, checkAssignability: false), null);
+      expect(assign(parse('toString()'), 1, scope, checkAssignability: false),
           null);
       expect(
           assign(parse('name | filter'), 1, scope, checkAssignability: false),
           null);
     });
-
   });
 
   group('scope', () {
@@ -334,48 +319,33 @@ main() {
       expect(parent['a'], 'A');
       expect(child['b'], 'B');
     });
-
   });
 
   group('observe', () {
     test('should observe an identifier', () {
       var foo = new Foo(name: 'foo');
-      return expectObserve('name',
-          model: foo,
-          beforeMatcher: 'foo',
+      return expectObserve('name', model: foo, beforeMatcher: 'foo',
           mutate: () {
-            foo.name = 'fooz';
-          },
-          afterMatcher: 'fooz'
-      );
+        foo.name = 'fooz';
+      }, afterMatcher: 'fooz');
     });
 
     test('should observe an invocation', () {
       var foo = new Foo(name: 'foo');
       return expectObserve('foo.name',
-          variables: {'foo': foo},
-          beforeMatcher: 'foo',
-          mutate: () {
-            foo.name = 'fooz';
-          },
-          afterMatcher: 'fooz'
-      );
+          variables: {'foo': foo}, beforeMatcher: 'foo', mutate: () {
+        foo.name = 'fooz';
+      }, afterMatcher: 'fooz');
     });
 
     test('should observe map access', () {
       var foo = toObservable({'one': 'one', 'two': 'two'});
       return expectObserve('foo["one"]',
-          variables: {'foo': foo},
-          beforeMatcher: 'one',
-          mutate: () {
-            foo['one'] = '1';
-          },
-          afterMatcher: '1'
-      );
+          variables: {'foo': foo}, beforeMatcher: 'one', mutate: () {
+        foo['one'] = '1';
+      }, afterMatcher: '1');
     });
-
   });
-
 }
 
 @reflectable
@@ -436,13 +406,12 @@ expectEval(String s, dynamic matcher, [Object model, Map vars = const {}]) {
   expect(observer.currentValue, matcher, reason: s);
 }
 
-expectObserve(String s, {
-    Object model,
+expectObserve(String s,
+    {Object model,
     Map variables: const {},
     dynamic beforeMatcher,
     mutate(),
     dynamic afterMatcher}) {
-
   var scope = new Scope(model: model, variables: variables);
   var observer = observe(new Parser(s).parse(), scope);
   update(observer, scope);
@@ -455,13 +424,19 @@ expectObserve(String s, {
   });
   mutate();
   // fail if we don't receive an update by the next event loop
-  return Future.wait([future, new Future(() {
-    expect(passed, true, reason: "Didn't receive a change notification on $s");
-  })]);
+  return Future.wait([
+    future,
+    new Future(() {
+      expect(passed, true,
+          reason: "Didn't receive a change notification on $s");
+    })
+  ]);
 }
 
 // Regression test from https://code.google.com/p/dart/issues/detail?id=13459
 class WordElement extends Observable {
-  @observable List chars1 = 'abcdefg'.split('');
-  @reflectable List filteredList(List original) => [original[0], original[1]];
+  @observable
+  List chars1 = 'abcdefg'.split('');
+  @reflectable
+  List filteredList(List original) => [original[0], original[1]];
 }
