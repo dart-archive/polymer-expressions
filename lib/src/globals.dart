@@ -20,11 +20,12 @@ import 'package:observe/observe.dart' show reflectable;
 Iterable<IndexedValue> enumerate(Iterable iterable) =>
     new EnumerateIterable(iterable);
 
-@reflectable class IndexedValue<V> {
+@reflectable
+class IndexedValue<V> {
   final int index;
   final V value;
 
-  operator==(o) => o is IndexedValue && o.index == index && o.value == value;
+  operator ==(o) => o is IndexedValue && o.index == index && o.value == value;
   int get hashCode => value.hashCode;
   String toString() => '($index, $value)';
 

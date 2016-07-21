@@ -132,8 +132,8 @@ class MapLiteralEntry extends Expression {
 
   String toString() => "$key: $entryValue";
 
-  bool operator ==(o) => o is MapLiteralEntry && o.key == key
-      && o.entryValue == entryValue;
+  bool operator ==(o) =>
+      o is MapLiteralEntry && o.key == key && o.entryValue == entryValue;
 
   int get hashCode => _JenkinsSmiHash.hash2(key.hashCode, entryValue.hashCode);
 }
@@ -176,8 +176,8 @@ class UnaryOperator extends Expression {
 
   String toString() => '$operator $child';
 
-  bool operator ==(o) => o is UnaryOperator && o.operator == operator
-      && o.child == child;
+  bool operator ==(o) =>
+      o is UnaryOperator && o.operator == operator && o.child == child;
 
   int get hashCode => _JenkinsSmiHash.hash2(operator.hashCode, child.hashCode);
 }
@@ -193,11 +193,14 @@ class BinaryOperator extends Expression {
 
   String toString() => '($left $operator $right)';
 
-  bool operator ==(o) => o is BinaryOperator && o.operator == operator
-      && o.left == left && o.right == right;
+  bool operator ==(o) =>
+      o is BinaryOperator &&
+      o.operator == operator &&
+      o.left == left &&
+      o.right == right;
 
-  int get hashCode => _JenkinsSmiHash.hash3(operator.hashCode, left.hashCode,
-      right.hashCode);
+  int get hashCode =>
+      _JenkinsSmiHash.hash3(operator.hashCode, left.hashCode, right.hashCode);
 }
 
 class TernaryOperator extends Expression {
@@ -211,13 +214,14 @@ class TernaryOperator extends Expression {
 
   String toString() => '($condition ? $trueExpr : $falseExpr)';
 
-  bool operator ==(o) => o is TernaryOperator
-      && o.condition == condition
-      && o.trueExpr == trueExpr
-      && o.falseExpr == falseExpr;
+  bool operator ==(o) =>
+      o is TernaryOperator &&
+      o.condition == condition &&
+      o.trueExpr == trueExpr &&
+      o.falseExpr == falseExpr;
 
-  int get hashCode => _JenkinsSmiHash.hash3(condition.hashCode,
-      trueExpr.hashCode, falseExpr.hashCode);
+  int get hashCode => _JenkinsSmiHash.hash3(
+      condition.hashCode, trueExpr.hashCode, falseExpr.hashCode);
 }
 
 class InExpression extends Expression implements HasIdentifier {
@@ -234,8 +238,8 @@ class InExpression extends Expression implements HasIdentifier {
 
   String toString() => '($left in $right)';
 
-  bool operator ==(o) => o is InExpression && o.left == left
-      && o.right == right;
+  bool operator ==(o) =>
+      o is InExpression && o.left == left && o.right == right;
 
   int get hashCode => _JenkinsSmiHash.hash2(left.hashCode, right.hashCode);
 }
@@ -254,8 +258,8 @@ class AsExpression extends Expression implements HasIdentifier {
 
   String toString() => '($left as $right)';
 
-  bool operator ==(o) => o is AsExpression && o.left == left
-      && o.right == right;
+  bool operator ==(o) =>
+      o is AsExpression && o.left == left && o.right == right;
 
   int get hashCode => _JenkinsSmiHash.hash2(left.hashCode, right.hashCode);
 }
@@ -271,9 +275,7 @@ class Index extends Expression {
   String toString() => '$receiver[$argument]';
 
   bool operator ==(o) =>
-      o is Index
-      && o.receiver == receiver
-      && o.argument == argument;
+      o is Index && o.receiver == receiver && o.argument == argument;
 
   int get hashCode =>
       _JenkinsSmiHash.hash2(receiver.hashCode, argument.hashCode);
@@ -290,12 +292,9 @@ class Getter extends Expression {
   String toString() => '$receiver.$name';
 
   bool operator ==(o) =>
-      o is Getter
-      && o.receiver == receiver
-      && o.name == name;
+      o is Getter && o.receiver == receiver && o.name == name;
 
   int get hashCode => _JenkinsSmiHash.hash2(receiver.hashCode, name.hashCode);
-
 }
 
 /**
@@ -318,13 +317,13 @@ class Invoke extends Expression {
   String toString() => '$receiver.$method($arguments)';
 
   bool operator ==(o) =>
-      o is Invoke
-      && o.receiver == receiver
-      && o.method == method
-      && _listEquals(o.arguments, arguments);
+      o is Invoke &&
+      o.receiver == receiver &&
+      o.method == method &&
+      _listEquals(o.arguments, arguments);
 
-  int get hashCode => _JenkinsSmiHash.hash3(receiver.hashCode, method.hashCode,
-      _hashList(arguments));
+  int get hashCode => _JenkinsSmiHash.hash3(
+      receiver.hashCode, method.hashCode, _hashList(arguments));
 }
 
 bool _listEquals(List a, List b) {
@@ -338,8 +337,7 @@ bool _listEquals(List a, List b) {
 }
 
 int _hashList(List l) {
-  var hash = l.fold(0,
-      (h, item) => _JenkinsSmiHash.combine(h, item.hashCode));
+  var hash = l.fold(0, (h, item) => _JenkinsSmiHash.combine(h, item.hashCode));
   return _JenkinsSmiHash.finish(hash);
 }
 
@@ -353,7 +351,7 @@ class _JenkinsSmiHash {
   }
 
   static int finish(int hash) {
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) <<  3));
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
     hash = hash ^ (hash >> 11);
     return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
   }

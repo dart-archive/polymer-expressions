@@ -9,16 +9,13 @@ import 'package:polymer_expressions/visitor.dart';
 import 'package:unittest/unittest.dart';
 
 main() {
-
   group('visitor', () {
-
     // regression test
     test('should not infinitely recurse on parenthesized expressions', () {
       var visitor = new TestVisitor();
       var expr = new Parser('(1)').parse();
       visitor.visit(expr);
     });
-
   });
 }
 

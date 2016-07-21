@@ -40,9 +40,8 @@ main() {
 
     test('should enumerate item and index', () {
       templateBind(testDiv.query('template'))
-          ..bindingDelegate = new PolymerExpressions()
-          ..model = toObservable(
-              ['hello', 'from', 'polymer', 'expressions']);
+        ..bindingDelegate = new PolymerExpressions()
+        ..model = toObservable(['hello', 'from', 'polymer', 'expressions']);
 
       return new Future(() {
         expect(testDiv.queryAll('div').map((n) => n.text), [
@@ -56,11 +55,11 @@ main() {
 
     test('should update after changes', () {
       var model = toObservable(
-              ['hello', 'from', 'polymer', 'expressions', 'a', 'b', 'c']);
+          ['hello', 'from', 'polymer', 'expressions', 'a', 'b', 'c']);
 
       templateBind(testDiv.query('template'))
-          ..bindingDelegate = new PolymerExpressions()
-          ..model = model;
+        ..bindingDelegate = new PolymerExpressions()
+        ..model = model;
 
       return new Future(() {
         expect(testDiv.queryAll('div').map((n) => n.text), [

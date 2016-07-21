@@ -8,9 +8,7 @@ import 'package:polymer_expressions/tokenizer.dart';
 import 'package:unittest/unittest.dart';
 
 main() {
-
   group('tokenizer', () {
-
     test('should tokenize an empty expression', () {
       expectTokens('', []);
     });
@@ -33,52 +31,56 @@ main() {
 
     test('should tokenize a dot operator', () {
       expectTokens('a.b', [
-          t(IDENTIFIER_TOKEN, 'a'),
-          t(DOT_TOKEN, '.'),
-          t(IDENTIFIER_TOKEN, 'b')]);
+        t(IDENTIFIER_TOKEN, 'a'),
+        t(DOT_TOKEN, '.'),
+        t(IDENTIFIER_TOKEN, 'b')
+      ]);
     });
 
     test('should tokenize a unary plus operator', () {
-      expectTokens('+a', [
-          t(OPERATOR_TOKEN, '+'),
-          t(IDENTIFIER_TOKEN, 'a')]);
+      expectTokens('+a', [t(OPERATOR_TOKEN, '+'), t(IDENTIFIER_TOKEN, 'a')]);
     });
 
     test('should tokenize a binary plus operator', () {
       expectTokens('a + b', [
-          t(IDENTIFIER_TOKEN, 'a'),
-          t(OPERATOR_TOKEN, '+'),
-          t(IDENTIFIER_TOKEN, 'b')]);
+        t(IDENTIFIER_TOKEN, 'a'),
+        t(OPERATOR_TOKEN, '+'),
+        t(IDENTIFIER_TOKEN, 'b')
+      ]);
     });
 
     test('should tokenize a logical and operator', () {
       expectTokens('a && b', [
-          t(IDENTIFIER_TOKEN, 'a'),
-          t(OPERATOR_TOKEN, '&&'),
-          t(IDENTIFIER_TOKEN, 'b')]);
+        t(IDENTIFIER_TOKEN, 'a'),
+        t(OPERATOR_TOKEN, '&&'),
+        t(IDENTIFIER_TOKEN, 'b')
+      ]);
     });
 
     test('should tokenize a ternary operator', () {
       expectTokens('a ? b : c', [
-          t(IDENTIFIER_TOKEN, 'a'),
-          t(OPERATOR_TOKEN, '?'),
-          t(IDENTIFIER_TOKEN, 'b'),
-          t(COLON_TOKEN, ':'),
-          t(IDENTIFIER_TOKEN, 'c')]);
+        t(IDENTIFIER_TOKEN, 'a'),
+        t(OPERATOR_TOKEN, '?'),
+        t(IDENTIFIER_TOKEN, 'b'),
+        t(COLON_TOKEN, ':'),
+        t(IDENTIFIER_TOKEN, 'c')
+      ]);
     });
 
     test('should tokenize "in" expressions', () {
       expectTokens('item in items', [
-          t(IDENTIFIER_TOKEN, 'item'),
-          t(KEYWORD_TOKEN, 'in'),
-          t(IDENTIFIER_TOKEN, 'items')]);
+        t(IDENTIFIER_TOKEN, 'item'),
+        t(KEYWORD_TOKEN, 'in'),
+        t(IDENTIFIER_TOKEN, 'items')
+      ]);
     });
 
     test('should takenize an "as" expression', () {
       expectTokens('a as b', [
-          t(IDENTIFIER_TOKEN, 'a'),
-          t(KEYWORD_TOKEN, 'as'),
-          t(IDENTIFIER_TOKEN, 'b')]);
+        t(IDENTIFIER_TOKEN, 'a'),
+        t(KEYWORD_TOKEN, 'as'),
+        t(IDENTIFIER_TOKEN, 'b')
+      ]);
     });
 
     test('should tokenize keywords', () {
@@ -89,43 +91,47 @@ main() {
 
     test('should tokenize groups', () {
       expectTokens('a(b)[]{}', [
-          t(IDENTIFIER_TOKEN, 'a'),
-          t(GROUPER_TOKEN, '('),
-          t(IDENTIFIER_TOKEN, 'b'),
-          t(GROUPER_TOKEN, ')'),
-          t(GROUPER_TOKEN, '['),
-          t(GROUPER_TOKEN, ']'),
-          t(GROUPER_TOKEN, '{'),
-          t(GROUPER_TOKEN, '}')]);
+        t(IDENTIFIER_TOKEN, 'a'),
+        t(GROUPER_TOKEN, '('),
+        t(IDENTIFIER_TOKEN, 'b'),
+        t(GROUPER_TOKEN, ')'),
+        t(GROUPER_TOKEN, '['),
+        t(GROUPER_TOKEN, ']'),
+        t(GROUPER_TOKEN, '{'),
+        t(GROUPER_TOKEN, '}')
+      ]);
     });
 
     test('should tokenize argument lists', () {
       expectTokens('(a, b)', [
-          t(GROUPER_TOKEN, '('),
-          t(IDENTIFIER_TOKEN, 'a'),
-          t(COMMA_TOKEN, ','),
-          t(IDENTIFIER_TOKEN, 'b'),
-          t(GROUPER_TOKEN, ')')]);
+        t(GROUPER_TOKEN, '('),
+        t(IDENTIFIER_TOKEN, 'a'),
+        t(COMMA_TOKEN, ','),
+        t(IDENTIFIER_TOKEN, 'b'),
+        t(GROUPER_TOKEN, ')')
+      ]);
     });
 
     test('should tokenize maps', () {
       expectTokens("{'a': b}", [
-          t(GROUPER_TOKEN, '{'),
-          t(STRING_TOKEN, 'a'),
-          t(COLON_TOKEN, ':'),
-          t(IDENTIFIER_TOKEN, 'b'),
-          t(GROUPER_TOKEN, '}')]);
+        t(GROUPER_TOKEN, '{'),
+        t(STRING_TOKEN, 'a'),
+        t(COLON_TOKEN, ':'),
+        t(IDENTIFIER_TOKEN, 'b'),
+        t(GROUPER_TOKEN, '}')
+      ]);
     });
 
     test('should tokenize lists', () {
       expectTokens("[1, 'a', b]", [
-          t(GROUPER_TOKEN, '['),
-          t(INTEGER_TOKEN, '1'),
-          t(COMMA_TOKEN, ','),
-          t(STRING_TOKEN, 'a'),
-          t(COMMA_TOKEN, ','),
-          t(IDENTIFIER_TOKEN, 'b'),
-          t(GROUPER_TOKEN, ']')]);
+        t(GROUPER_TOKEN, '['),
+        t(INTEGER_TOKEN, '1'),
+        t(COMMA_TOKEN, ','),
+        t(STRING_TOKEN, 'a'),
+        t(COMMA_TOKEN, ','),
+        t(IDENTIFIER_TOKEN, 'b'),
+        t(GROUPER_TOKEN, ']')
+      ]);
     });
 
     test('should tokenize integers', () {
@@ -144,7 +150,6 @@ main() {
       expectTokens('true', [t(IDENTIFIER_TOKEN, 'true')]);
       expectTokens('false', [t(IDENTIFIER_TOKEN, 'false')]);
     });
-
   });
 }
 
@@ -181,11 +186,7 @@ class MatcherList extends Matcher {
     for (int i = 0; i < o.length; i++) {
       var state = new Map();
       if (!matchers[i].matches(o[i], state)) {
-        matchState.addAll({
-          'index': i,
-          'value': o[i],
-          'state': state,
-        });
+        matchState.addAll({'index': i, 'value': o[i], 'state': state,});
         return false;
       }
     }
@@ -197,8 +198,8 @@ class MatcherList extends Matcher {
     matchers.forEach((m) => m.describe(d));
   }
 
-  Description describeMismatch(item, Description mismatchDescription,
-      Map matchState, bool verbose) {
+  Description describeMismatch(
+      item, Description mismatchDescription, Map matchState, bool verbose) {
     if (matchState != null) {
       var index = matchState['index'];
       var value = matchState['value'];
@@ -214,5 +215,4 @@ class MatcherList extends Matcher {
       }
     }
   }
-
 }

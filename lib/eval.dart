@@ -16,33 +16,29 @@ import 'filter.dart';
 import 'visitor.dart';
 
 final _BINARY_OPERATORS = {
-  '+':   (a, b) => a + b,
-  '-':   (a, b) => a - b,
-  '*':   (a, b) => a * b,
-  '/':   (a, b) => a / b,
-  '%':   (a, b) => a % b,
-  '==':  (a, b) => a == b,
-  '!=':  (a, b) => a != b,
+  '+': (a, b) => a + b,
+  '-': (a, b) => a - b,
+  '*': (a, b) => a * b,
+  '/': (a, b) => a / b,
+  '%': (a, b) => a % b,
+  '==': (a, b) => a == b,
+  '!=': (a, b) => a != b,
   '===': (a, b) => identical(a, b),
   '!==': (a, b) => !identical(a, b),
-  '>':   (a, b) => a > b,
-  '>=':  (a, b) => a >= b,
-  '<':   (a, b) => a < b,
-  '<=':  (a, b) => a <= b,
-  '||':  (a, b) => a || b,
-  '&&':  (a, b) => a && b,
-  '|':   (a, f) {
+  '>': (a, b) => a > b,
+  '>=': (a, b) => a >= b,
+  '<': (a, b) => a < b,
+  '<=': (a, b) => a <= b,
+  '||': (a, b) => a || b,
+  '&&': (a, b) => a && b,
+  '|': (a, f) {
     if (f is Transformer) return f.forward(a);
     if (f is Filter) return f(a);
     throw new EvalException("Filters must be a one-argument function.");
   }
 };
 
-final _UNARY_OPERATORS = {
-  '+': (a) => a,
-  '-': (a) => -a,
-  '!': (a) => !a,
-};
+final _UNARY_OPERATORS = {'+': (a) => a, '-': (a) => -a, '!': (a) => !a,};
 
 final _BOOLEAN_OPERATORS = ['!', '||', '&&'];
 
@@ -81,7 +77,6 @@ Object update(ExpressionObserver expr, Scope scope, {skipChanges: false}) {
  */
 Object assign(Expression expr, Object value, Scope scope,
     {bool checkAssignability: true}) {
-
   Expression expression;
   var property;
   bool isIndex = false;
@@ -141,7 +136,6 @@ Object assign(Expression expr, Object value, Scope scope,
   return value;
 }
 
-
 /**
  * A scope in polymer expressions that can map names to objects. Scopes contain
  * a set of named variables and a unique model object. The scope structure
@@ -155,7 +149,8 @@ abstract class Scope implements Indexable<String, Object> {
   /** Create a scope containing a [model] and all of [variables]. */
   factory Scope({Object model, Map<String, Object> variables}) {
     var scope = new _ModelScope(model);
-    return variables == null ? scope
+    return variables == null
+        ? scope
         : new _GlobalsScope(new Map<String, Object>.from(variables), scope);
   }
 
@@ -196,7 +191,7 @@ class _ModelScope extends Scope {
 
   _ModelScope(this.model) : super._();
 
-  Object operator[](String name) {
+  Object operator [](String name) {
     if (name == 'this') return model;
     var symbol = smoke.nameToSymbol(name);
     if (model == null || symbol == null) {
@@ -229,7 +224,7 @@ class _LocalVariableScope extends Scope {
 
   Object get model => parent != null ? parent.model : null;
 
-  Object operator[](String name) {
+  Object operator [](String name) {
     if (varName == name) return _convert(value);
     if (parent != null) return parent[name];
     throw new EvalException("variable '$name' not found");
@@ -256,7 +251,7 @@ class _GlobalsScope extends Scope {
 
   Object get model => parent != null ? parent.model : null;
 
-  Object operator[](String name) {
+  Object operator [](String name) {
     if (variables.containsKey(name)) return _convert(variables[name]);
     if (parent != null) return parent[name];
     throw new EvalException("variable '$name' not found");
@@ -456,7 +451,7 @@ class ObserverBuilder extends Visitor {
   visitIndex(Index i) {
     var receiver = visit(i.receiver);
     var arg = visit(i.argument);
-    var index =  new IndexObserver(i, receiver, arg);
+    var index = new IndexObserver(i, receiver, arg);
     receiver._parent = index;
     arg._parent = index;
     return index;
@@ -467,7 +462,7 @@ class ObserverBuilder extends Visitor {
     var args = (i.arguments == null)
         ? null
         : i.arguments.map(visit).toList(growable: false);
-    var invoke =  new InvokeObserver(i, receiver, args);
+    var invoke = new InvokeObserver(i, receiver, args);
     receiver._parent = invoke;
     if (args != null) args.forEach((a) => a._parent = invoke);
     return invoke;
@@ -538,7 +533,6 @@ class ObserverBuilder extends Visitor {
 
 class EmptyObserver extends ExpressionObserver<EmptyExpression>
     implements EmptyExpression {
-
   EmptyObserver(EmptyExpression value) : super(value);
 
   _updateSelf(Scope scope) {
@@ -550,7 +544,6 @@ class EmptyObserver extends ExpressionObserver<EmptyExpression>
 }
 
 class LiteralObserver extends ExpressionObserver<Literal> implements Literal {
-
   LiteralObserver(Literal value) : super(value);
 
   dynamic get value => _expr.value;
@@ -564,7 +557,6 @@ class LiteralObserver extends ExpressionObserver<Literal> implements Literal {
 
 class ListLiteralObserver extends ExpressionObserver<ListLiteral>
     implements ListLiteral {
-
   final List<ExpressionObserver> items;
 
   ListLiteralObserver(ListLiteral value, this.items) : super(value);
@@ -578,14 +570,13 @@ class ListLiteralObserver extends ExpressionObserver<ListLiteral>
 
 class MapLiteralObserver extends ExpressionObserver<MapLiteral>
     implements MapLiteral {
-
   final List<MapLiteralEntryObserver> entries;
 
   MapLiteralObserver(MapLiteral value, this.entries) : super(value);
 
   _updateSelf(Scope scope) {
-    _value = entries.fold(new Map(),
-        (m, e) => m..[e.key._value] = e.entryValue._value);
+    _value = entries.fold(
+        new Map(), (m, e) => m..[e.key._value] = e.entryValue._value);
   }
 
   accept(Visitor v) => v.visitMapLiteral(this);
@@ -593,7 +584,6 @@ class MapLiteralObserver extends ExpressionObserver<MapLiteral>
 
 class MapLiteralEntryObserver extends ExpressionObserver<MapLiteralEntry>
     implements MapLiteralEntry {
-
   final LiteralObserver key;
   final ExpressionObserver entryValue;
 
@@ -605,7 +595,6 @@ class MapLiteralEntryObserver extends ExpressionObserver<MapLiteralEntry>
 
 class IdentifierObserver extends ExpressionObserver<Identifier>
     implements Identifier {
-
   IdentifierObserver(Identifier value) : super(value);
 
   String get value => _expr.value;
@@ -631,7 +620,6 @@ class ParenthesizedObserver extends ExpressionObserver<ParenthesizedExpression>
   final ExpressionObserver child;
 
   ParenthesizedObserver(ParenthesizedExpression expr, this.child) : super(expr);
-
 
   _updateSelf(Scope scope) {
     _value = child._value;
@@ -662,12 +650,10 @@ class UnaryObserver extends ExpressionObserver<UnaryOperator>
 
 class BinaryObserver extends ExpressionObserver<BinaryOperator>
     implements BinaryOperator {
-
   final ExpressionObserver left;
   final ExpressionObserver right;
 
-  BinaryObserver(BinaryOperator expr, this.left, this.right)
-      : super(expr);
+  BinaryObserver(BinaryOperator expr, this.left, this.right) : super(expr);
 
   String get operator => _expr.operator;
 
@@ -681,7 +667,8 @@ class BinaryObserver extends ExpressionObserver<BinaryOperator>
       _value = null;
     } else {
       if (operator == '|' && left._value is ObservableList) {
-        _subscription = (left._value as ObservableList).listChanges
+        _subscription = (left._value as ObservableList)
+            .listChanges
             .listen((_) => _invalidate(scope));
       }
       _value = f(left._value, right._value);
@@ -689,25 +676,23 @@ class BinaryObserver extends ExpressionObserver<BinaryOperator>
   }
 
   accept(Visitor v) => v.visitBinaryOperator(this);
-
 }
 
 class TernaryObserver extends ExpressionObserver<TernaryOperator>
     implements TernaryOperator {
-
   final ExpressionObserver condition;
   final ExpressionObserver trueExpr;
   final ExpressionObserver falseExpr;
 
-  TernaryObserver(TernaryOperator expr, this.condition, this.trueExpr,
-      this.falseExpr) : super(expr);
+  TernaryObserver(
+      TernaryOperator expr, this.condition, this.trueExpr, this.falseExpr)
+      : super(expr);
 
   _updateSelf(Scope scope) {
     _value = _toBool(condition._value) ? trueExpr._value : falseExpr._value;
   }
 
   accept(Visitor v) => v.visitTernaryOperator(this);
-
 }
 
 class GetterObserver extends ExpressionObserver<Getter> implements Getter {
@@ -754,8 +739,8 @@ class IndexObserver extends ExpressionObserver<Index> implements Index {
     _value = receiverValue[key];
 
     if (receiverValue is ObservableList) {
-      _subscription = (receiverValue as ObservableList).listChanges
-          .listen((changes) {
+      _subscription =
+          (receiverValue as ObservableList).listChanges.listen((changes) {
         if (changes.any((c) => c.indexChanged(key))) _invalidate(scope);
       });
     } else if (receiverValue is Observable) {
@@ -774,8 +759,7 @@ class InvokeObserver extends ExpressionObserver<Invoke> implements Invoke {
   final ExpressionObserver receiver;
   final List<ExpressionObserver> arguments;
 
-  InvokeObserver(Expression expr, this.receiver, this.arguments)
-      : super(expr) {
+  InvokeObserver(Expression expr, this.receiver, this.arguments) : super(expr) {
     assert(arguments != null);
   }
 
@@ -800,13 +784,14 @@ class InvokeObserver extends ExpressionObserver<Invoke> implements Invoke {
       _value = smoke.invoke(receiverValue, symbol, args);
 
       if (receiverValue is Observable) {
-        _subscription = (receiverValue as Observable).changes.listen(
-            (List<ChangeRecord> changes) {
-              if (changes.any(
-                  (c) => c is PropertyChangeRecord && c.name == symbol)) {
-                _invalidate(scope);
-              }
-            });
+        _subscription = (receiverValue as Observable)
+            .changes
+            .listen((List<ChangeRecord> changes) {
+          if (changes
+              .any((c) => c is PropertyChangeRecord && c.name == symbol)) {
+            _invalidate(scope);
+          }
+        });
       }
     }
   }

@@ -11,7 +11,8 @@ class StreamBinding<T> extends ObservableBox {
   final Stream<T> stream;
 
   StreamBinding(this.stream) {
-    stream.listen((T i) { value = i; });
+    stream.listen((T i) {
+      value = i;
+    });
   }
-
 }

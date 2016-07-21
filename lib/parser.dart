@@ -9,8 +9,26 @@ export 'tokenizer.dart' show ParseException;
 import 'expression.dart';
 
 const _UNARY_OPERATORS = const <String>['+', '-', '!'];
-const _BINARY_OPERATORS = const <String>['+', '-', '*', '/', '%', '^', '==',
-    '!=', '>', '<', '>=', '<=', '||', '&&', '&', '===', '!==', '|'];
+const _BINARY_OPERATORS = const <String>[
+  '+',
+  '-',
+  '*',
+  '/',
+  '%',
+  '^',
+  '==',
+  '!=',
+  '>',
+  '<',
+  '>=',
+  '<=',
+  '||',
+  '&&',
+  '&',
+  '===',
+  '!==',
+  '|'
+];
 
 Expression parse(String expr) => new Parser(expr).parse();
 
@@ -33,8 +51,8 @@ class Parser {
   }
 
   _advance([int kind, String value]) {
-    if ((kind != null && (_token == null || _token.kind != kind))
-        || (value != null && (_token == null || _token.value != value))) {
+    if ((kind != null && (_token == null || _token.kind != kind)) ||
+        (value != null && (_token == null || _token.value != value))) {
       throw new ParseException("Expected kind $kind ($value): $_token");
     }
     _iterator.moveNext();
@@ -75,8 +93,8 @@ class Parser {
         } else {
           break;
         }
-      } else if (_token.kind == OPERATOR_TOKEN
-          && _token.precedence >= precedence) {
+      } else if (_token.kind == OPERATOR_TOKEN &&
+          _token.precedence >= precedence) {
         left = _token.value == '?' ? _parseTernary(left) : _parseBinary(left);
       } else {
         break;
@@ -104,11 +122,11 @@ class Parser {
     }
     _advance();
     var right = _parseUnary();
-    while (_token != null
-        && (_token.kind == OPERATOR_TOKEN
-        || _token.kind == DOT_TOKEN
-        || _token.kind == GROUPER_TOKEN)
-        && _token.precedence > op.precedence) {
+    while (_token != null &&
+        (_token.kind == OPERATOR_TOKEN ||
+            _token.kind == DOT_TOKEN ||
+            _token.kind == GROUPER_TOKEN) &&
+        _token.precedence > op.precedence) {
       right = _parsePrecedence(right, _token.precedence);
     }
     return _astFactory.binary(left, op.value, right);
@@ -191,7 +209,7 @@ class Parser {
         break;
       }
       items.add(_parseExpression());
-    } while(_token != null && _token.value == ',');
+    } while (_token != null && _token.value == ',');
     _advance(GROUPER_TOKEN, ']');
     return new ListLiteral(items);
   }
@@ -204,7 +222,7 @@ class Parser {
         break;
       }
       entries.add(_parseMapLiteralEntry());
-    } while(_token != null && _token.value == ',');
+    } while (_token != null && _token.value == ',');
     _advance(GROUPER_TOKEN, '}');
     return new MapLiteral(entries);
   }
@@ -232,8 +250,7 @@ class Parser {
     _advance();
     var right = _parseExpression();
     if (right is! Identifier) {
-      throw new ParseException(
-          "'as' statements must end with an identifier");
+      throw new ParseException("'as' statements must end with an identifier");
     }
     return _astFactory.asExpr(left, right);
   }
@@ -279,7 +296,7 @@ class Parser {
         }
         var expr = _parseExpression();
         args.add(expr);
-      } while(_token != null && _token.value == ',');
+      } while (_token != null && _token.value == ',');
       _advance(GROUPER_TOKEN, ')');
       return args;
     }
@@ -320,5 +337,4 @@ class Parser {
     _advance();
     return value;
   }
-
 }
