@@ -195,6 +195,7 @@ class MatcherList extends Matcher {
   Description describe(Description d) {
     d.add('matches all: ');
     matchers.forEach((m) => m.describe(d));
+    return d;
   }
 
   Description describeMismatch(item, Description mismatchDescription,
@@ -213,6 +214,7 @@ class MatcherList extends Matcher {
         mismatchDescription.add('was ').addDescriptionOf(item);
       }
     }
+    return mismatchDescription;
   }
 
 }
