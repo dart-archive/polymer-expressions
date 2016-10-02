@@ -7,6 +7,7 @@ library bindings_test;
 import 'dart:async';
 import 'dart:html';
 
+import 'package:observable/observable.dart';
 import 'package:observe/observe.dart';
 import 'package:observe/mirrors_used.dart' as mu;
 import 'package:observe/src/dirty_check.dart' show dirtyCheckZone;
@@ -314,7 +315,7 @@ _nextMicrotask(_) => new Future(() {});
 _afterTimeout(_) => new Future.delayed(new Duration(milliseconds: 30), () {});
 
 @reflectable
-class NotifyModel extends ChangeNotifier {
+class NotifyModel extends Observable {
   var _x;
   var _y;
   NotifyModel([this._x, this._y]);

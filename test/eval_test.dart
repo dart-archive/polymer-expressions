@@ -14,6 +14,7 @@ import 'package:polymer_expressions/eval.dart';
 import 'package:polymer_expressions/filter.dart';
 import 'package:polymer_expressions/parser.dart';
 import 'package:unittest/unittest.dart';
+import 'package:observable/observable.dart';
 import 'package:observe/observe.dart';
 import 'package:observe/mirrors_used.dart' as mu;
 
@@ -349,7 +350,7 @@ main() {
 }
 
 @reflectable
-class Foo extends ChangeNotifier {
+class Foo extends Observable {
   String _name;
   String get name => _name;
   void set name(String n) {
@@ -434,7 +435,7 @@ expectObserve(String s,
 }
 
 // Regression test from https://code.google.com/p/dart/issues/detail?id=13459
-class WordElement extends Observable {
+class WordElement extends AutoObservable {
   @observable
   List chars1 = 'abcdefg'.split('');
   @reflectable

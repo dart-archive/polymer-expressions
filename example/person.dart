@@ -4,9 +4,9 @@
 
 library person;
 
-import 'package:observe/observe.dart';
+import 'package:observable/observable.dart';
 
-class Person extends ChangeNotifier {
+class Person extends Observable {
   String _firstName;
   String _lastName;
   List<String> _items;
