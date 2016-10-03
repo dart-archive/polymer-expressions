@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:html';
 
+import 'package:observable/observable.dart';
 import 'package:observe/observe.dart';
 import 'package:observe/mirrors_used.dart' as mu;
 import 'package:polymer_expressions/polymer_expressions.dart';
@@ -606,7 +607,7 @@ Future<Element> waitForChange(Element e) {
 }
 
 @reflectable
-class Model extends ChangeNotifier {
+class Model extends Observable {
   String _data;
 
   Model(this._data);

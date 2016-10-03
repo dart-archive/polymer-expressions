@@ -7,6 +7,7 @@ library polymer_expressions.eval;
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:observable/observable.dart';
 import 'package:observe/observe.dart';
 import 'package:smoke/smoke.dart' as smoke;
 
