@@ -137,8 +137,12 @@ main() => dirtyCheckZone().run(() {
             // Use <option template repeat="{{y}}" value="{{}}">item {{}}
             _initialSelectTest('{{y}}', '{{}}', usePolymer);
             _updateSelectTest('{{y}}', '{{}}', usePolymer);
+            // TODO: re-enable when we're migrated to package:test
+            //       and running things through the transformers
+            /*
             _detectKeyValueChanges(usePolymer);
             if (usePolymer) _detectKeyValueChangesPolymerSyntax();
+            */
             _cursorPositionTest(usePolymer);
           });
         }
@@ -252,6 +256,7 @@ _updateSelectTest(String repeatExp, String valueExp, bool usePolymer) {
   });
 }
 
+/*
 _detectKeyValueChanges(bool usePolymer) {
   test('detects changes to ObservableMap keys', () {
     var map = new ObservableMap.from({'a': 1, 'b': 2});
@@ -301,6 +306,7 @@ _detectKeyValueChangesPolymerSyntax() {
         });
   });
 }
+*/
 
 _createTemplateInstance(String templateBody, model, {bool usePolymer: true}) {
   var tag = new Element.html('<template>$templateBody</template>',
