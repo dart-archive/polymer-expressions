@@ -1,7 +1,9 @@
 # Don’t commit the following directories created by pub.
+.packages
 .pub
 build/
 packages
+pubspec.lock
 
 # Or the files created by dart2js.
 *.dart.js
@@ -12,6 +14,3 @@ packages
 *.sw?
 .idea/
 .pub/
-
-# Include when developing application packages.
-pubspec.lock
