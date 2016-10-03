@@ -1,7 +1,7 @@
-#### Pub version 0.13.0+3
+#### Pub version 0.13.1+1
  * Update to use `observable` & latest `observe`.
 
-#### Pub version 0.13.0+2
+#### Pub version 0.13.1
  * Update `observe` dependency.
 
 #### Pub version 0.13.0
